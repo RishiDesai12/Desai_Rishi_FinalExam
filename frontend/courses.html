@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Students</a> | <a href="courses.html">Courses</a>
+    </nav>
+    <br>
+
+    <div style="border: 1px solid #ccc; padding: 20px; width: 300px; border-radius: 8px;">
+        <h2>Add a Course</h2>
+        <form onsubmit="addCourse(event)">
+            <div style="margin-bottom: 10px;">
+                <label for="classId">Class ID:</label>
+                <input type="text" id="classId" name="classId" required>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="className">Class Name:</label>
+                <input type="text" id="className" name="className" required>
+            </div>
+            <button type="submit">Add Course</button>
+        </form>
+    </div>
+
+    <br>
+    
+    <!-- Courses List Section -->
+    <div style="border: 1px solid #ccc; padding: 20px; width: 400px; border-radius: 8px;">
+        <h2>Courses List</h2>
+        <button onclick="listCourses()" style="margin-bottom: 10px;">List Courses</button>
+        
+        <table border="1" style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="padding: 5px;">Class ID</th>
+                    <th style="padding: 5px;">Class Name</th>
+                    <th style="padding: 5px;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="coursesTableBody">
+            
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+    <div style="border: 1px solid #ccc; padding: 20px; width: 400px; border-radius: 8px;">
+        <h2>Enroll Student in Course</h2>
+        <form onsubmit="enrollStudent(event)">
+            <div style="margin-bottom: 10px;">
+                <label for="studentSelect">Select Student:</label>
+                <select id="studentSelect" required>
+                    <option value="">-- Select Student --</option>
+  
+                </select>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="courseSelect">Select Course:</label>
+                <select id="courseSelect" required>
+                    <option value="">-- Select Course --</option>
+
+                </select>
+            </div>
+            <button type="submit">Enroll Student</button>
+        </form>
+    </div>
+</body>
+</html>
