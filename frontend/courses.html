@@ -12,6 +12,7 @@
     </nav>
     <br>
 
+
     <div style="border: 1px solid #ccc; padding: 20px; width: 300px; border-radius: 8px;">
         <h2>Add a Course</h2>
         <form onsubmit="addCourse(event)">
@@ -28,8 +29,7 @@
     </div>
 
     <br>
-    
-    <!-- Courses List Section -->
+
     <div style="border: 1px solid #ccc; padding: 20px; width: 400px; border-radius: 8px;">
         <h2>Courses List</h2>
         <button onclick="listCourses()" style="margin-bottom: 10px;">List Courses</button>
@@ -50,6 +50,7 @@
 
     <br>
 
+
     <div style="border: 1px solid #ccc; padding: 20px; width: 400px; border-radius: 8px;">
         <h2>Enroll Student in Course</h2>
         <form onsubmit="enrollStudent(event)">
@@ -57,18 +58,45 @@
                 <label for="studentSelect">Select Student:</label>
                 <select id="studentSelect" required>
                     <option value="">-- Select Student --</option>
-  
                 </select>
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="courseSelect">Select Course:</label>
                 <select id="courseSelect" required>
                     <option value="">-- Select Course --</option>
-
                 </select>
             </div>
             <button type="submit">Enroll Student</button>
         </form>
     </div>
+
+    <br>
+    
+
+    <div style="border: 1px solid #ccc; padding: 20px; width: 450px; border-radius: 8px;">
+        <h2>Students in Course</h2>
+        <div style="margin-bottom: 10px;">
+            <label for="viewCourseSelect">Select Course:</label>
+            <select id="viewCourseSelect" required>
+                <option value="">-- Select Course --</option>
+  
+            </select>
+            <button type="button" onclick="listEnrolledStudents()">List Students</button>
+        </div>
+        
+        <table border="1" style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th style="padding: 5px;">Name</th>
+                    <th style="padding: 5px;">ID</th>
+                    <th style="padding: 5px;">Phone</th>
+                    <th style="padding: 5px;">Zip</th>
+                </tr>
+            </thead>
+            <tbody id="enrolledStudentsTableBody">
+            </tbody>
+        </table>
+    </div>
+
 </body>
 </html>

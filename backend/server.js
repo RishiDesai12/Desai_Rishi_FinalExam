@@ -57,7 +57,6 @@ async function saveCourses(courses) {
     }
 }
 
-// --- ENROLLMENT HELPER FUNCTIONS ---
 async function loadEnrollments() {
     try {
         const data = await fs.promises.readFile(ENROLLMENT_FILE, 'utf8');
@@ -134,7 +133,6 @@ app.post('/delete-student', async (req, res) => {
         const deletedStudent = students.splice(index, 1)[0];
         await saveStudents(students);
 
-        // Cascade delete student enrollments
         const enrollments = await loadEnrollments();
         const updatedEnrollments = enrollments.filter(e => e.studentId !== deletedStudent.id);
         await saveEnrollments(updatedEnrollments);
