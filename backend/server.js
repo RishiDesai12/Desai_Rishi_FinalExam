@@ -106,6 +106,12 @@ app.post('/add-student', async (req, res) => {
         }
 
         const students = await loadStudents();
+        
+        const existingStudent = students.find(s => s.id === id);
+        if (existingStudent) {
+            return res.status(400).send({ error: 'A student with this ID already exists.' });
+        }
+
         const newStudent = { name, id, phone, zip };
         students.push(newStudent);
         await saveStudents(students);
@@ -162,6 +168,12 @@ app.post('/courses', async (req, res) => {
         }
 
         const courses = await loadCourses();
+        
+        const existingCourse = courses.find(c => c.classId === classId);
+        if (existingCourse) {
+            return res.status(400).send({ error: 'A course with this ID already exists.' });
+        }
+
         const newCourse = { classId, className };
         courses.push(newCourse);
         await saveCourses(courses);
@@ -200,7 +212,6 @@ app.post('/delete-course', async (req, res) => {
         const deletedCourse = courses.splice(index, 1)[0];
         await saveCourses(courses);
 
-        // Cascade delete course enrollments
         const enrollments = await loadEnrollments();
         const updatedEnrollments = enrollments.filter(e => e.classId !== classId);
         await saveEnrollments(updatedEnrollments);
@@ -212,7 +223,6 @@ app.post('/delete-course', async (req, res) => {
     }
 });
 
-// --- ENROLLMENT ROUTES ---
 app.post('/enrollments', async (req, res) => {
     try {
         const { studentId, classId } = req.body;
@@ -221,6 +231,12 @@ app.post('/enrollments', async (req, res) => {
         }
 
         const enrollments = await loadEnrollments();
+        
+        const duplicate = enrollments.find(e => e.studentId === studentId && e.classId === classId);
+        if (duplicate) {
+            return res.status(400).send({ error: 'This student is already enrolled in this course.' });
+        }
+
         const newEnrollment = { studentId, classId };
         enrollments.push(newEnrollment);
         await saveEnrollments(enrollments);

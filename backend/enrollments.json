@@ -1,18 +1,10 @@
 [
   {
-    "studentId": "1002",
-    "classId": "CIS 2336"
-  },
-  {
-    "studentId": "1003",
+    "studentId": "11111",
     "classId": "CIS 4365"
   },
   {
     "studentId": "1002",
-    "classId": "CIS 4365"
-  },
-  {
-    "studentId": "1003",
     "classId": "CIS 2336"
   }
 ]
