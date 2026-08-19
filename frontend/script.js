@@ -181,8 +181,72 @@ async function deleteCourse(classId) {
         if (response.ok) {
             alert('Course deleted successfully!');
             listCourses(); 
+        } else {
             const error = await response.json();
             alert(`Failed to delete course: ${error.error}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred connecting to the server.');
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('studentSelect') && document.getElementById('courseSelect')) {
+        populateDropdowns();
+    }
+});
+
+async function populateDropdowns() {
+    try {
+        // Fetch and format Students
+        const studentRes = await fetch('http://localhost:3000/students');
+        const students = await studentRes.json();
+        const studentSelect = document.getElementById('studentSelect');
+        
+        students.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.id;
+            option.textContent = `${student.name} (${student.id})`;
+            studentSelect.appendChild(option);
+        });
+
+        // Fetch and format Courses
+        const courseRes = await fetch('http://localhost:3000/courses');
+        const courses = await courseRes.json();
+        const courseSelect = document.getElementById('courseSelect');
+        
+        courses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.classId;
+            option.textContent = `${course.className} (${course.classId})`;
+            courseSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error populating dropdowns:', error);
+    }
+}
+
+async function enrollStudent(event) {
+    event.preventDefault();
+
+    const studentId = document.getElementById('studentSelect').value;
+    const classId = document.getElementById('courseSelect').value;
+
+    try {
+        const response = await fetch('http://localhost:3000/enrollments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId, classId })
+        });
+
+        if (response.ok) {
+            alert('Student enrolled successfully!');
+            event.target.reset(); 
+        } else {
+            const error = await response.json();
+            alert(`Failed to enroll: ${error.error}`);
         }
     } catch (error) {
         console.error('Error:', error);
