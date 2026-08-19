@@ -102,7 +102,6 @@ async function addStudent(event) {
     }
 }
 
-// --- COURSE MANAGEMENT FUNCTIONS ---
 
 async function addCourse(event) {
     event.preventDefault(); 
@@ -123,6 +122,7 @@ async function addCourse(event) {
             alert('Course added successfully!');
             event.target.reset(); 
             listCourses(); 
+            populateDropdowns(); 
         } else {
             alert('Failed to add course. Check server logs.');
         }
@@ -181,6 +181,7 @@ async function deleteCourse(classId) {
         if (response.ok) {
             alert('Course deleted successfully!');
             listCourses(); 
+            populateDropdowns(); 
         } else {
             const error = await response.json();
             alert(`Failed to delete course: ${error.error}`);
@@ -192,8 +193,10 @@ async function deleteCourse(classId) {
 }
 
 
+
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('studentSelect') && document.getElementById('courseSelect')) {
+
+    if (document.getElementById('studentSelect') || document.getElementById('viewCourseSelect')) {
         populateDropdowns();
     }
 });
@@ -205,23 +208,42 @@ async function populateDropdowns() {
         const students = await studentRes.json();
         const studentSelect = document.getElementById('studentSelect');
         
-        students.forEach(student => {
-            const option = document.createElement('option');
-            option.value = student.id;
-            option.textContent = `${student.name} (${student.id})`;
-            studentSelect.appendChild(option);
-        });
+        if (studentSelect) {
+            studentSelect.innerHTML = '<option value="">-- Select Student --</option>'; 
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.name} (${student.id})`;
+                studentSelect.appendChild(option);
+            });
+        }
 
         // Fetch and format Courses
         const courseRes = await fetch('http://localhost:3000/courses');
         const courses = await courseRes.json();
-        const courseSelect = document.getElementById('courseSelect');
         
+        const courseSelect = document.getElementById('courseSelect');
+        const viewCourseSelect = document.getElementById('viewCourseSelect');
+        
+        if (courseSelect) courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+        if (viewCourseSelect) viewCourseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+
         courses.forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.classId;
-            option.textContent = `${course.className} (${course.classId})`;
-            courseSelect.appendChild(option);
+            // Add to the Enrollment dropdown
+            if (courseSelect) {
+                const option1 = document.createElement('option');
+                option1.value = course.classId;
+                option1.textContent = `${course.className} (${course.classId})`;
+                courseSelect.appendChild(option1);
+            }
+            
+            // Add to the View Students dropdown
+            if (viewCourseSelect) {
+                const option2 = document.createElement('option');
+                option2.value = course.classId;
+                option2.textContent = `${course.className} (${course.classId})`;
+                viewCourseSelect.appendChild(option2);
+            }
         });
     } catch (error) {
         console.error('Error populating dropdowns:', error);
@@ -251,5 +273,49 @@ async function enrollStudent(event) {
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred connecting to the server.');
+    }
+}
+
+async function listEnrolledStudents() {
+    const classId = document.getElementById('viewCourseSelect').value;
+    
+    if (!classId) {
+        alert('Please select a course first.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/course-students/${classId}`);
+        
+        if (!response.ok) {
+            alert('Failed to fetch students.');
+            return;
+        }
+
+        const students = await response.json();
+        const tbody = document.getElementById('enrolledStudentsTableBody');
+        
+        tbody.innerHTML = ''; 
+
+        if (students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 10px;">No students enrolled yet.</td></tr>';
+            return;
+        }
+
+
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="padding: 5px;">${student.name}</td>
+                <td style="padding: 5px;">${student.id}</td>
+                <td style="padding: 5px;">${student.phone}</td>
+                <td style="padding: 5px;">${student.zip}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching the students.');
     }
 }
