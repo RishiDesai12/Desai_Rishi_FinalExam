@@ -9,7 +9,7 @@ app.use(express.json());
 
 const DATA_FILE = path.join(__dirname, 'students.json');
 const COURSE_FILE = path.join(__dirname, 'courses.json');
-const ENROLLMENT_FILE = path.join(__dirname, 'enrollments.json'); // Added enrollment file path
+const ENROLLMENT_FILE = path.join(__dirname, 'enrollments.json');
 
 // --- STUDENT HELPER FUNCTIONS ---
 async function loadStudents() {
@@ -41,7 +41,7 @@ async function loadCourses() {
         return JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
-            return []; // Return empty array if file doesn't exist yet
+            return []; 
         }
         console.error('Error reading courses file:', error);
         return [];
@@ -134,6 +134,11 @@ app.post('/delete-student', async (req, res) => {
         const deletedStudent = students.splice(index, 1)[0];
         await saveStudents(students);
 
+        // Cascade delete student enrollments
+        const enrollments = await loadEnrollments();
+        const updatedEnrollments = enrollments.filter(e => e.studentId !== deletedStudent.id);
+        await saveEnrollments(updatedEnrollments);
+
         res.send({ message: 'Student deleted successfully', student: deletedStudent });
     } catch (error) {
         console.error('Error deleting student:', error);
@@ -151,7 +156,6 @@ app.get('/students', async (req, res) => {
     }
 });
 
-// --- COURSE ROUTES ---
 app.post('/courses', async (req, res) => {
     try {
         const { classId, className } = req.body;
@@ -198,6 +202,11 @@ app.post('/delete-course', async (req, res) => {
         const deletedCourse = courses.splice(index, 1)[0];
         await saveCourses(courses);
 
+        // Cascade delete course enrollments
+        const enrollments = await loadEnrollments();
+        const updatedEnrollments = enrollments.filter(e => e.classId !== classId);
+        await saveEnrollments(updatedEnrollments);
+
         res.send({ message: 'Course deleted successfully', course: deletedCourse });
     } catch (error) {
         console.error('Error deleting course:', error);
@@ -205,7 +214,7 @@ app.post('/delete-course', async (req, res) => {
     }
 });
 
-
+// --- ENROLLMENT ROUTES ---
 app.post('/enrollments', async (req, res) => {
     try {
         const { studentId, classId } = req.body;
@@ -236,7 +245,6 @@ app.get('/course-students/:classId', async (req, res) => {
             .filter(e => e.classId === classId)
             .map(e => e.studentId);
 
-
         const enrolledStudents = students.filter(student => 
             enrolledStudentIds.includes(student.id)
         );
@@ -247,7 +255,6 @@ app.get('/course-students/:classId', async (req, res) => {
         res.status(500).send({ error: 'Internal server error' });
     }
 });
-
 
 const PORT = 3000;
 app.listen(PORT, () => {
